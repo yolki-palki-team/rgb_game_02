@@ -20,9 +20,9 @@ export class Renderer {
   if(g.swing>0){c.strokeStyle='#f5da94';c.lineWidth=7;c.shadowBlur=18;c.shadowColor='#d5a754';c.beginPath();c.arc(g.hero.x,g.hero.y-20,65,g.angle-1.2,g.angle+1.2);c.stroke();c.shadowBlur=0;}
   for(const p of g.particles){c.globalAlpha=Math.max(0,p.life*2);c.fillStyle=p.color;c.beginPath();c.arc(p.x,p.y,3,0,7);c.fill();}c.globalAlpha=1;
   for(const [x,y] of [[240,520],[830,600],[1050,690],[1190,350],[1650,1100],[1900,520],[2230,900]]){this.sprite('torch',x,y,1.8);const glow=c.createRadialGradient(x,y-35,5,x,y-35,110+Math.sin(g.time*7+x)*5);glow.addColorStop(0,'#ed9c3533');glow.addColorStop(1,'#b3652000');c.fillStyle=glow;c.fillRect(x-120,y-160,240,240);}
-  c.font='14px Georgia';c.textAlign='center';c.fillStyle='#d6c78e';c.fillText('Хранитель · E',650,575);c.fillStyle='#8ddcde';c.fillText('Испытание RGB · E',650,875);c.restore();
+  c.font='14px Georgia';c.textAlign='center';c.fillStyle='#d6c78e';c.fillText('Keeper · E',650,575);c.fillStyle='#8ddcde';c.fillText('RGB Trial · E',650,875);c.restore();
   const shade=c.createRadialGradient(640,360,180,640,360,760);shade.addColorStop(0,'#07101800');shade.addColorStop(1,'#030911c0');c.fillStyle=shade;c.fillRect(0,0,1280,720);
-  const boss=g.enemies.find(e=>e.type==='boss');if(boss&&g.hero.x>1800){c.fillStyle='#0c111bdd';c.fillRect(400,640,480,48);c.fillStyle='#864663';c.fillRect(410,669,460*boss.hp/boss.maxhp,9);c.fillStyle='#dec8df';c.font='17px Georgia';c.textAlign='center';c.fillText(`Теневой Страж${boss.hp<320?' · ЯРОСТЬ':''}`,640,660);}
-  if(g.state==='dead'){c.fillStyle='#100b18aa';c.fillRect(0,0,1280,720);c.fillStyle='#e4a9ad';c.textAlign='center';c.font='46px Georgia';c.fillText('Пепел помнит тебя',640,360);}
+  const boss=g.enemies.find(e=>e.type==='boss');if(boss&&g.hero.x>1800){c.fillStyle='#0c111bdd';c.fillRect(400,640,480,48);c.fillStyle='#864663';c.fillRect(410,669,460*boss.hp/boss.maxhp,9);c.fillStyle='#dec8df';c.font='17px Georgia';c.textAlign='center';c.fillText(`Shadow Guardian${boss.hp<320?' · ENRAGED':''}`,640,660);}
+  if(g.state==='dead'){c.fillStyle='#100b18aa';c.fillRect(0,0,1280,720);c.fillStyle='#e4a9ad';c.textAlign='center';c.font='46px Georgia';c.fillText('The Ashes Remember You',640,360);}
  }
 }

@@ -113,7 +113,7 @@ func draw_hud():
  icon("potion",Rect2(390,654,32,32));label_at(Vector2(430,678),"Q  ×"+str(game.potions),18,TEXT)
  icon("gold",Rect2(554,655,28,28));label_at(Vector2(592,678),str(game.gold)+" gold",20,GOLD)
  button(Rect2(774,650,138,42),"I  Inventory",func():game.overlay="inventory")
- button(Rect2(922,650,160,42),"R  Предметы",func():game.overlay="rgb";game.net.refresh_status())
+ button(Rect2(922,650,160,42),"R  Items",func():game.overlay="rgb";game.net.refresh_status())
  button(Rect2(1092,650,164,42),"Esc  Journal",func():game.overlay="pause")
  label_at(Vector2(31,143),"WASD Move   ·   Space Dodge   ·   E Interact",12,MUTED)
  # Boss health appears only in the arena.
@@ -190,25 +190,25 @@ func draw_settings():
 func draw_rgb():
  var net=game.net
  panel(Rect2(60,65,1160,558),Color("65716c"))
- label_at(Vector2(86,105),"КУЗНЯ КЛЯТВЫ",28,GOLD)
+ label_at(Vector2(86,105),"OATH FORGE",28,GOLD)
  for j in range(2):
   var slot=["A","B"][j]
-  button(Rect2(600+j*150,81,140,34),str(net.profiles[slot].name),func():net.switch_profile(slot);confirming=false;recipient_id="",net.profile_slot==slot,not net.busy)
- button(Rect2(910,81,170,34),"Испытание",func():game.overlay="trial",true)
- button(Rect2(1100,81,92,34),"Закрыть",func():game.overlay="")
+  button(Rect2(600+j*150,81,140,34),net.profile_label(slot),func():net.switch_profile(slot);confirming=false;recipient_id="",net.profile_slot==slot,not net.busy)
+ button(Rect2(910,81,170,34),"Trial",func():game.overlay="trial",true)
+ button(Rect2(1100,81,92,34),"Close",func():game.overlay="")
  label_at(Vector2(86,136),str(net.profile.get("name",""))+" · "+str(net.profile.get("id","")).left(8)+"  |  "+net.status,14,TEAL if net.service.get("available",false) else Color("da9c91"))
  line(Vector2(86,150),Vector2(1192,150))
- label_at(Vector2(86,177),"ВАШИ ПРЕДМЕТЫ",13,MUTED)
+ label_at(Vector2(86,177),"YOUR ITEMS",13,MUTED)
  if net.items.is_empty():
-  wrapped(Vector2(86,220),"Пройдите Испытание клятвы. Кузнец выпустит единственный Огненный меч для вашей награды.",238,17,TEXT)
-  button(Rect2(86,360,245,44),"Войти в испытание",func():game.overlay="trial",true)
+  wrapped(Vector2(86,220),"Complete the Oath Trial. The smith will issue one unique Flame Sword for your reward.",238,17,TEXT)
+  button(Rect2(86,360,245,44),"Enter the trial",func():game.overlay="trial",true)
  item_page=clampi(item_page,0,maxi(0,(net.items.size()-1)/4))
  for j in range(item_page*4,mini(net.items.size(),item_page*4+4)):
   var item=net.items[j];var y=195+(j%4)*79
   button(Rect2(86,y,248,69),"",func():net.selected_serial=int(item.serial);confirming=false,net.selected_serial==int(item.serial))
   icon("legendary",Rect2(97,y+10,45,45))
-  label_at(Vector2(151,y+28),"Огненный меч #"+str(int(item.serial)),15,GOLD)
-  label_at(Vector2(151,y+50),"Ваш" if item.is_owner else ("Передан" if item.owner_id!=null else "В пути"),13,MUTED)
+  label_at(Vector2(151,y+28),"Flame Sword #"+str(int(item.serial)),15,GOLD)
+  label_at(Vector2(151,y+50),"Yours" if item.is_owner else ("Transferred" if item.owner_id!=null else "In transit"),13,MUTED)
  if net.items.size()>4:
   button(Rect2(86,524,116,32),"←",func():item_page-=1,false,item_page>0)
   button(Rect2(214,524,120,32),"→",func():item_page+=1,false,(item_page+1)*4<net.items.size())
@@ -219,15 +219,15 @@ func draw_rgb():
  if not chosen.is_empty():
   icon("legendary",Rect2(378,177,100,100))
   label_at(Vector2(501,202),chosen.name+"  #"+str(int(chosen.serial)),27,GOLD)
-  label_at(Vector2(503,232),"ЛЕГЕНДАРНЫЙ   /   УРОН  "+str(int(chosen.damage))+"   /   RGB UDA",15,TEAL)
+  label_at(Vector2(503,232),"LEGENDARY   /   DAMAGE  "+str(int(chosen.damage))+"   /   RGB UDA",15,TEAL)
   var available=net.online and net.service.get("available",false)
-  var ownership_text=chosen.status if chosen.is_owner or chosen.owner_id==null else "Передан другому игроку · недоступен"
-  if not available:ownership_text="Связь потеряна · использование приостановлено"
+  var ownership_text=chosen.status if chosen.is_owner or chosen.owner_id==null else "Transferred to another player · unavailable"
+  if not available:ownership_text="Connection lost · item use suspended"
   label_at(Vector2(503,259),ownership_text,16,TEXT)
   wrapped(Vector2(382,298),chosen.description,780,16,MUTED)
-  button(Rect2(382,345,200,42),"Экипирован" if net.equipped_damage()>0 and int(net.equipment.get("serial",0))==int(chosen.serial) else "Экипировать",func():net.equip_item(int(chosen.serial)),true,chosen.can_equip and available and not net.busy)
-  button(Rect2(596,345,200,42),"Передать",func():confirming=not confirming;recipient_id="",false,chosen.can_equip and available and not net.busy)
-  button(Rect2(810,345,194,42),"Детали  "+("−" if details else "+"),func():details=not details)
+  button(Rect2(382,345,200,42),"Equipped" if net.equipped_damage()>0 and int(net.equipment.get("serial",0))==int(chosen.serial) else "Equip",func():net.equip_item(int(chosen.serial)),true,chosen.can_equip and available and not net.busy)
+  button(Rect2(596,345,200,42),"Transfer",func():confirming=not confirming;recipient_id="",false,chosen.can_equip and available and not net.busy)
+  button(Rect2(810,345,194,42),"Details  "+("−" if details else "+"),func():details=not details)
   if confirming:
    var recipients=net.players.duplicate()
    # Put the other local demo profile first; all choices still use real server identities.
@@ -239,29 +239,29 @@ func draw_rgb():
      if recipients[k].id==recipient_id:recipient_index=k;break
     var receiver=recipients[recipient_index]
     recipient_id=receiver.id
-    button(Rect2(382,403,420,40),"Кому: "+receiver.name+" · "+receiver.id.left(8)+"  ▸",func():recipient_id=recipients[(recipient_index+1)%recipients.size()].id)
-    button(Rect2(818,403,354,40),"Подтвердить передачу",func():net.transfer_item(int(chosen.serial),receiver.id);confirming=false,true,available and chosen.can_equip and not net.busy)
-    wrapped(Vector2(382,468),"Меч будет снят с экипировки и заблокирован до проверки передачи. После получения пользоваться им сможет только выбранный игрок.",775,15,TEXT)
-   else:label_at(Vector2(382,430),"Нет других профилей. Подключите игрока B.",16,MUTED)
+    button(Rect2(382,403,420,40),"To: "+receiver.name+" · "+receiver.id.left(8)+"  ▸",func():recipient_id=recipients[(recipient_index+1)%recipients.size()].id)
+    button(Rect2(818,403,354,40),"Confirm transfer",func():net.transfer_item(int(chosen.serial),receiver.id);confirming=false,true,available and chosen.can_equip and not net.busy)
+    wrapped(Vector2(382,468),"The sword will be unequipped and reserved during verification. Once received, only the selected player can use it.",775,15,TEXT)
+   else:label_at(Vector2(382,430),"No other profiles. Connect Player B first.",16,MUTED)
   elif details:
-   label_at(Vector2(382,417),"Подлинный актив игры · отдельный кошелёк · Bitcoin regtest",14,TEAL)
-   wrapped(Vector2(382,444),str(chosen.asset_id) if chosen.asset_id!=null else "asset_id появится после настоящего выпуска.",780,14,TEXT)
+   label_at(Vector2(382,417),"Verified game asset · separate wallet · Bitcoin regtest",14,TEAL)
+   wrapped(Vector2(382,444),str(chosen.asset_id) if chosen.asset_id!=null else "The asset_id appears after real issuance.",780,14,TEXT)
    for op in net.history:
     if int(op.serial)!=int(chosen.serial):continue
     if op.txid!=null:label_at(Vector2(382,492),"txid: "+str(op.txid),12,MUTED)
-    if op.error_code!=null:label_at(Vector2(382,520),"Диагностика: "+str(op.error_code),13,MUTED)
+    if op.error_code!=null:label_at(Vector2(382,520),"Diagnostics: "+str(op.error_code),13,MUTED)
     break
   else:
-   label_at(Vector2(382,417),"ИСТОРИЯ МЕЧА",13,MUTED)
+   label_at(Vector2(382,417),"SWORD HISTORY",13,MUTED)
    var history_y=444
    for op in net.history:
     if int(op.serial)!=int(chosen.serial) or history_y>516:continue
-    label_at(Vector2(382,history_y),("Награда" if op.kind=="award" else "→ "+op.recipient_name)+" · "+op.status,15,TEXT)
+    label_at(Vector2(382,history_y),("Reward" if op.kind=="award" else "→ "+op.recipient_name)+" · "+op.status,15,TEXT)
     history_y+=24
     if op.error_code!=null:
-     label_at(Vector2(382,history_y),"Операция приостановлена: ждём проверки кошелька. Меч заблокирован.",13,Color("da9c91"))
+     label_at(Vector2(382,history_y),"Operation paused for wallet verification. Sword reserved.",13,Color("da9c91"))
      history_y+=24
- label_at(Vector2(86,580),"Ключи кошельков хранит локальный сервис RuneForge. Золото кампании — обычная игровая валюта.",14,MUTED)
+ label_at(Vector2(86,580),"Wallet keys are held by the local RuneForge service. Campaign gold is ordinary game currency.",14,MUTED)
  if net.message!="":
   panel(Rect2(60,632,1160,62))
   wrapped(Vector2(86,657),net.message,1100,15,GOLD)
@@ -273,10 +273,10 @@ func trial_actor(kind,p,size):
 func draw_trial():
  var net=game.net;var trial=net.trial
  panel(Rect2(120,65,1040,558),Color("65716c"))
- label_at(Vector2(154,112),"ИСПЫТАНИЕ КЛЯТВЫ",29,GOLD)
- button(Rect2(890,85,235,38),"К моим предметам",func():game.overlay="rgb";net.refresh_status())
- label_at(Vector2(154,144),"Тактический поединок · судит сервер · профиль "+net.profile_slot,15,TEAL)
- wrapped(Vector2(154,180),"Кузнец: выдержи поединок, и я выкую твой Огненный меч. Читай замах стража: тяжёлый удар встречай защитой; отдыхай, когда силы иссякнут.",940,17,TEXT)
+ label_at(Vector2(154,112),"OATH TRIAL",29,GOLD)
+ button(Rect2(890,85,235,38),"My items",func():game.overlay="rgb";net.refresh_status())
+ label_at(Vector2(154,144),"Tactical duel · server-verified · profile "+net.profile_slot,15,TEAL)
+ wrapped(Vector2(154,180),"Smith: survive the duel and I will forge your Flame Sword. Read the Guardian: guard against heavy attacks and rest when your stamina runs low.",940,17,TEXT)
  for j in range(20):
   draw_texture_rect_region(game.textures.floor,Rect2(155+j*48,253,48,265),Rect2((j%6)*24,0,24,24))
  draw_rect(Rect2(155,253,960,265),Color(0.02,0.03,0.05,0.5))
@@ -286,26 +286,26 @@ func draw_trial():
  if net.trial_pulse>0:draw_arc(Vector2(730,370),83,-1.5,1.4,24,Color(1,0.7,0.4,net.trial_pulse),7)
  if trial.is_empty():
   icon("legendary",Rect2(600,292,80,80))
-  label_at(Vector2(487,427),"Награда: Огненный меч · 52 урона",18,GOLD)
-  button(Rect2(460,542,360,46),"Принять вызов",func():net.begin_trial(),true,not net.busy and net.online)
+  label_at(Vector2(487,427),"Reward: Flame Sword · 52 damage",18,GOLD)
+  button(Rect2(460,542,360,46),"Accept challenge",func():net.begin_trial(),true,not net.busy and net.online)
  else:
   bar(Rect2(260,275,210,17),trial.get("hp",0),100,Color("a74d5b"))
   bar(Rect2(260,300,210,9),trial.get("stamina",0),100,TEAL)
   bar(Rect2(780,255,210,17),trial.get("enemy_hp",0),180,Color("946587"))
   if trial.status=="active":
-   var intent={"heavy":"ТЯЖЁЛЫЙ УДАР — защищайся","sweep":"Размашистый удар","bolt":"Магический снаряд","recover":"Страж восстанавливается"}.get(trial.intent,str(trial.intent))
+   var intent={"heavy":"HEAVY ATTACK — guard","sweep":"Sweeping attack","bolt":"Magic bolt","recover":"Guardian is recovering"}.get(trial.intent,str(trial.intent))
    label_at(Vector2(435,485),intent,19,GOLD)
    for j in range(3):
     var action=["attack","guard","rest"][j]
-    button(Rect2(260+j*260,542,240,46),["Удар","Защита","Отдых"][j],func():net.trial_action(action),j==0,not net.busy)
+    button(Rect2(260+j*260,542,240,46),["Attack","Guard","Rest"][j],func():net.trial_action(action),j==0,not net.busy)
   elif trial.status=="won":
    icon("legendary",Rect2(600,305,80,80))
-   label_at(Vector2(465,450),"ПОБЕДА · МЕЧ ЗАРАБОТАН",24,GOLD)
-   label_at(Vector2(390,485),"Кузнец выпускает и доставляет награду автоматически.",16,TEXT)
-   button(Rect2(460,542,360,46),"Следить за получением",func():game.overlay="rgb";net.refresh_status(),true)
+   label_at(Vector2(465,450),"VICTORY · SWORD EARNED",24,GOLD)
+   label_at(Vector2(390,485),"The smith issues and delivers your reward automatically.",16,TEXT)
+   button(Rect2(460,542,360,46),"Track delivery",func():game.overlay="rgb";net.refresh_status(),true)
   else:
-   label_at(Vector2(470,470),"Клятва требует ещё одной попытки.",20,GOLD)
-   button(Rect2(460,542,360,46),"Попробовать снова",func():net.begin_trial(),true,not net.busy)
+   label_at(Vector2(470,470),"The Oath demands another attempt.",20,GOLD)
+   button(Rect2(460,542,360,46),"Try again",func():net.begin_trial(),true,not net.busy)
  if net.message!="" or not net.online:
   panel(Rect2(120,632,1040,62))
   wrapped(Vector2(154,657),net.message if net.online else net.status,970,15,GOLD)
