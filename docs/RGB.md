@@ -28,7 +28,7 @@ The instance model separates:
 
 | Record | Meaning |
 |---|---|
-| `items.oath_relic` | Type: Огненный меч, Legendary, weapon, **52 damage** |
+| `items.oath_relic` | Type: Flame Sword, Legendary, weapon, **52 damage** |
 | `item_instances.serial` | One specific sword, stable across transfers |
 | `item_instances.asset_id` | One genuine UDA issued for that exact earned instance |
 | `item_operations` / `item_events` | Durable requested intent, observed stage, transaction and history |

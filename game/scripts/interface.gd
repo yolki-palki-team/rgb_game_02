@@ -1,5 +1,6 @@
 extends Control
 var game
+var blacksmith: Control
 var font: Font
 var buttons: Array=[]
 var selected="iron"
@@ -17,8 +18,10 @@ const TEAL=Color("82c3bb")
 const RARITIES=[Color("9ca8ad"),Color("82bc95"),Color("79b4df"),Color("b693d5"),Color("e6c07a")]
 
 func _ready():
+ set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  font=ThemeDB.fallback_font
  mouse_filter=Control.MOUSE_FILTER_IGNORE
+ blacksmith=Control.new();blacksmith.set_script(load("res://scripts/blacksmith_dialogue.gd"));blacksmith.game=game;add_child(blacksmith)
 
 func label_at(p,s,size=18,color=TEXT):draw_string(font,p,str(s),HORIZONTAL_ALIGNMENT_LEFT,-1,size,color)
 func line(a,b,color=Color("3e4c57")):draw_line(a,b,color,1)
@@ -311,6 +314,7 @@ func draw_trial():
   wrapped(Vector2(154,657),net.message if net.online else net.status,970,15,GOLD)
 
 func _input(event):
+ if game.overlay=="blacksmith":return
  if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed:
   for b in buttons:
    if b.rect.has_point(get_global_mouse_position()):

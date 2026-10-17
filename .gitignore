@@ -9,3 +9,5 @@ __pycache__/
 *.db-*
 *.log
 .DS_Store
+
+npc/qvac/node_modules/

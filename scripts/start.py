@@ -1,5 +1,5 @@
 """Persistent local stack; repeat launch preserves chain, wallets, profiles and database."""
-import argparse,fcntl,hashlib,json,os,subprocess,sys,time
+import argparse,fcntl,hashlib,json,os,shutil,subprocess,sys,time
 from pathlib import Path
 import httpx
 ROOT=Path(__file__).resolve().parents[1]
@@ -17,6 +17,39 @@ def running(pid,marker):
 def spawn(name,args):
  log=open(STATE/(name+'.log'),'a')
  p=subprocess.Popen(args,cwd=ROOT,env=ENV,stdout=log,stderr=log,start_new_session=True);log.close();return p.pid
+
+def start_blacksmith(state,statefile):
+ # This sidecar is independent of the RGB wallet worker. No seed directories are read.
+ node=shutil.which('node');npm=shutil.which('npm')
+ if not node or not npm:
+  print('Blacksmith unavailable: install Node >=22.17 and npm >=10.9, then rerun. The campaign remains playable.',flush=True);return
+ version=tuple(map(int,subprocess.check_output([node,'-p','process.versions.node'],text=True).strip().split('.')))
+ if version<(22,17,0):
+  print('Blacksmith unavailable: Node >=22.17 is required.',flush=True);return
+ package=ROOT/'npc/qvac';npcstate=STATE/'npc';npcstate.mkdir(exist_ok=True,mode=0o700)
+ digest=hashlib.sha256(b''.join((package/f).read_bytes() for f in ['service.js','model.js','package-lock.json'])).hexdigest()
+ marker='npc/qvac/service.js';pid=state.get('qvac')
+ if running(pid,marker) and state.get('qvac_digest')!=digest:
+  os.kill(pid,15)
+  for _ in range(40):
+   if not running(pid,marker):break
+   time.sleep(.2)
+  if running(pid,marker):raise RuntimeError('QVAC did not stop; no duplicate model started')
+ if not running(pid,marker):
+  try:response=httpx.get('http://127.0.0.1:'+ENV.get('RUNEFORGE_QVAC_PORT','8790')+'/health',timeout=1)
+  except httpx.TransportError:response=None
+  if response is not None:raise RuntimeError('QVAC port has an unmanaged service. Stop that service before using the launcher.')
+  lockhash=hashlib.sha256((package/'package-lock.json').read_bytes()).hexdigest();stamp=npcstate/'dependencies.sha256'
+  if not (package/'node_modules/@qvac/sdk').exists() or not stamp.exists() or stamp.read_text()!=lockhash:
+   print('Installing pinned local QVAC SDK…',flush=True)
+   subprocess.run([npm,'ci','--no-audit','--no-fund'],cwd=package,check=True);stamp.write_text(lockhash)
+  # Only runtime configuration goes into the inference process, never database/wallet credentials.
+  localenv={k:v for k,v in os.environ.items() if k in ('PATH','HOME','TMPDIR','LANG','QVAC_DEVICE','RUNEFORGE_QVAC_PORT')}
+  with open(STATE/'qvac.log','a') as log:
+   child=subprocess.Popen([node,str(package/'service.js')],cwd=ROOT,env=localenv,stdout=log,stderr=log,start_new_session=True)
+  state['qvac']=child.pid
+ state['qvac_digest']=digest;statefile.write_text(json.dumps(state));statefile.chmod(0o600)
+ print('Blacksmith: local Qwen is loading in the background. First download ~2.50 GB; progress is shown in Bram’s dialogue. Cache is reused.',flush=True)
 
 def main():
  parser=argparse.ArgumentParser();parser.add_argument('--no-game',action='store_true');parser.add_argument('--profile',choices=['A','B']);args=parser.parse_args()
@@ -58,6 +91,8 @@ def main():
   except (httpx.TransportError,ValueError):pass
   time.sleep(.3)
  else:raise RuntimeError('API failed to start; see .state/api.log')
+ try:start_blacksmith(state,statefile)
+ except (OSError,RuntimeError,subprocess.SubprocessError) as exc:print('Blacksmith startup failed: '+str(exc)+'. The game will show a connection error.',flush=True)
  print('RuneForge: real regtest infrastructure, API :8787 and managed wallet worker are running.',flush=True)
  if not args.no_game:
   gamepid=state.get('game')
@@ -65,6 +100,6 @@ def main():
    cmd=[str(ROOT/'scripts/play.sh')]
    if args.profile:cmd+=['--','--profile='+args.profile]
    state['game']=spawn('game',cmd);statefile.write_text(json.dumps(state))
-  print('Game launched. Begin/Continue → R → Испытание. Switch Игрок A / Игрок B in the item screen.',flush=True)
+  print('Game launched. Begin/Continue → E near Bram, east of the Keeper. R opens items, trial and Player A / Player B.',flush=True)
  lock.close()
 if __name__=='__main__':main()

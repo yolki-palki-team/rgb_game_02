@@ -88,8 +88,8 @@ def test_sender_settlement_waits_for_receiver_and_old_lease(api):
   assert db.get(ItemInstance,serial).owner_id==api.player_id
 
 def test_recipient_purpose_is_server_enforced_not_name_based(api):
- ordinary=api.post('/api/players',json={'name':'Тест is only a name'}).json()
- automated=api.post('/api/players',json={'name':'Игрок A','is_test':True}).json()
+ ordinary=api.post('/api/players',json={'name':'Test is only a name'}).json()
+ automated=api.post('/api/players',json={'name':'Player A','is_test':True}).json()
  listing=api.get('/api/relics').json()['players']
  assert ordinary['id'] in {p['id'] for p in listing}
  assert automated['id'] not in {p['id'] for p in listing}

@@ -143,3 +143,23 @@ class WorkerState(Base):
  available: Mapped[int]=mapped_column(Integer,default=0)
  error_code: Mapped[str|None]=mapped_column(String(80),nullable=True)
  block_height: Mapped[int|None]=mapped_column(Integer,nullable=True)
+
+class NPCConversation(Base):
+ __tablename__='npc_conversations'
+ player_id: Mapped[str]=mapped_column(ForeignKey('players.id'),primary_key=True)
+ revision: Mapped[int]=mapped_column(Integer,default=0)
+
+class NPCMessage(Base):
+ __tablename__='npc_messages'
+ __table_args__=(UniqueConstraint('player_id','request_key'),)
+ id: Mapped[str]=mapped_column(String(36),primary_key=True,default=uid)
+ player_id: Mapped[str]=mapped_column(ForeignKey('players.id'),index=True)
+ request_key: Mapped[str]=mapped_column(String(64))
+ revision: Mapped[int]=mapped_column(Integer)
+ prompt: Mapped[str]=mapped_column(String(600))
+ reply: Mapped[str|None]=mapped_column(String(600),nullable=True)
+ status: Mapped[str]=mapped_column(String(20),default='queued')
+ error_code: Mapped[str|None]=mapped_column(String(40),nullable=True)
+ model: Mapped[str|None]=mapped_column(String(80),nullable=True)
+ duration_ms: Mapped[int|None]=mapped_column(Integer,nullable=True)
+ created_at: Mapped[float]=mapped_column(Float,default=lambda:datetime.now(timezone.utc).timestamp())

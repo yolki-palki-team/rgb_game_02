@@ -37,8 +37,9 @@ func _ready():
  http.request_completed.connect(_completed)
  var configured=OS.get_environment("RUNEFORGE_API_URL")
  if configured!="":base=configured
- test_mode="--test-profiles" in OS.get_cmdline_user_args() or "--outage-game-check" in OS.get_cmdline_user_args() or "--network-smoke" in OS.get_cmdline_user_args() or "--managed-game-check" in OS.get_cmdline_user_args() or "--smoke" in OS.get_cmdline_user_args()
+ test_mode="--blacksmith-check" in OS.get_cmdline_user_args() or "--test-profiles" in OS.get_cmdline_user_args() or "--outage-game-check" in OS.get_cmdline_user_args() or "--network-smoke" in OS.get_cmdline_user_args() or "--managed-game-check" in OS.get_cmdline_user_args() or "--smoke" in OS.get_cmdline_user_args()
  if test_mode:profile_path="user://managed_test_profiles.json"
+ if "--blacksmith-check" in OS.get_cmdline_user_args():profile_path="user://blacksmith_test_profiles.json"
  if FileAccess.file_exists(profile_path):
   var stored=JSON.parse_string(FileAccess.get_file_as_string(profile_path))
   if stored is Dictionary:profiles=stored.get("profiles",{});profile_slot=stored.get("active","A")

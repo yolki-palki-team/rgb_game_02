@@ -64,7 +64,7 @@ func _ready():
  if settings.load("user://settings.cfg")==OK:
   muted=settings.get_value("game","muted",false)
   screen_shake=settings.get_value("game","screen_shake",true)
- for key in ["player","skeleton","goblin","mage","boss","elder","floor","earth","path","wall","water","tree","house","chest","fire","shrine","grave","torch","sword","fang","rune","legendary","potion","armor","gold","glow","icon","banner","pillar","rubble","bones","bush","carpet"]:
+ for key in ["player","skeleton","goblin","mage","boss","elder","blacksmith","anvil","floor","earth","path","wall","water","tree","house","chest","fire","shrine","grave","torch","sword","fang","rune","legendary","potion","armor","gold","glow","icon","banner","pillar","rubble","bones","bush","carpet"]:
   textures[key] = load("res://assets/" + key + ".png")
  for key in ["hit","slash","loot","roll","hurt","bell"]:
   sounds[key] = load("res://assets/" + key + ".wav")
@@ -90,7 +90,7 @@ func _ready():
  net.game = self
  add_child(net)
  build_world()
- smoke = "--verify-sword4" in OS.get_cmdline_user_args() or "--outage-game-check" in OS.get_cmdline_user_args() or "--managed-game-check" in OS.get_cmdline_user_args() or "--smoke" in OS.get_cmdline_user_args() or "--network-smoke" in OS.get_cmdline_user_args()
+ smoke = "--blacksmith-check" in OS.get_cmdline_user_args() or "--verify-sword4" in OS.get_cmdline_user_args() or "--outage-game-check" in OS.get_cmdline_user_args() or "--managed-game-check" in OS.get_cmdline_user_args() or "--smoke" in OS.get_cmdline_user_args() or "--network-smoke" in OS.get_cmdline_user_args()
  if "--smoke" in OS.get_cmdline_user_args():
   run_smoke.call_deferred()
  if "--network-smoke" in OS.get_cmdline_user_args():
@@ -141,6 +141,8 @@ func build_world():
    for y in range(int((p.y-68)/48),int((p.y-10)/48)+1):walls[Vector2i(x,y)]=true
  props.append({"kind":"fire","p":Vector2(510,590),"scale":1.6})
  props.append({"kind":"elder","p":Vector2(650,660),"scale":1.7})
+ props.append({"kind":"blacksmith","p":Vector2(800,720),"scale":1.7})
+ props.append({"kind":"anvil","p":Vector2(853,740),"scale":1.3})
  props.append({"kind":"shrine","p":Vector2(330,740),"scale":1.8})
  for p in [Vector2(1150,600),Vector2(1150,860),Vector2(1640,560),Vector2(1640,1110),Vector2(1870,610),Vector2(1870,840),Vector2(2210,510),Vector2(2210,1100)]:
   props.append({"kind":"torch","p":p,"scale":2.0})
@@ -351,6 +353,8 @@ func update_projectiles(d):
   if b.life<=0 or solid(b.p,4):burst(b.p,Color("a491d3"),6);bolts.remove_at(i)
 
 func interact():
+ if hero.distance_to(Vector2(800,720))<85:
+  ui.blacksmith.open_dialogue();return
  if hero.distance_to(Vector2(650,820))<85:
   overlay="trial";net.refresh_status();sound("bell");return
  if hero.distance_to(Vector2(650,660))<100:
@@ -420,6 +424,10 @@ func load_game(path=SAVE_PATH) -> bool:
  drops.clear();bolts.clear();return true
 
 func _input(event):
+ if overlay=="blacksmith":
+  if event is InputEventKey and event.pressed and event.keycode==KEY_ESCAPE:
+   ui.blacksmith.close_dialogue();get_viewport().set_input_as_handled()
+  return
  if event is InputEventKey and event.pressed and not event.echo:
   if get_viewport().gui_get_focus_owner() is LineEdit and event.keycode!=KEY_ESCAPE:return
   if event.keycode==KEY_ESCAPE:
@@ -431,7 +439,9 @@ func _input(event):
    if event.keycode==KEY_R:overlay="" if overlay=="rgb" else "rgb";net.refresh_status()
    if overlay=="":
     if event.keycode==KEY_SPACE:dodge()
-    if event.keycode==KEY_E:interact()
+    if event.keycode==KEY_E:
+     interact()
+     if overlay=="blacksmith":get_viewport().set_input_as_handled()
     if event.keycode==KEY_Q:drink()
     if event.keycode==KEY_F5:save_game();announce("Covenant saved",2)
 
@@ -519,7 +529,7 @@ func _draw():
      draw_rect(Rect2(e.p-Vector2(25,83),Vector2(50,4)),Color("232d36"));draw_rect(Rect2(e.p-Vector2(25,83),Vector2(50*e.hp/e.max,4)),Color("a85f68"))
    "prop":
     var p=obj.data
-    if p.kind=="elder":draw_actor("elder",p.p,int(t*2)%4,p.scale)
+    if p.kind in ["elder","blacksmith"]:draw_actor(p.kind,p.p,int(t*2)%4,p.scale)
     else:
      var size=textures[p.kind].get_size()*p.scale
      tex(p.kind,p.p-Vector2(size.x/2,size.y),size)
@@ -527,6 +537,8 @@ func _draw():
     var c=obj.data
     tex("chest",c.p-Vector2(32,54),Vector2(64,64))
     if c.open:draw_line(c.p-Vector2(22,27),c.p+Vector2(22,-27),Color("171c25"),7)
+ if hero.distance_to(Vector2(800,720))<85:
+  draw_string(ThemeDB.fallback_font,Vector2(748,620),"BRAM  /  E — Talk",HORIZONTAL_ALIGNMENT_LEFT,-1,15,Color("dfc58d"))
  if hero.distance_to(Vector2(650,660))<110:
   draw_string(ThemeDB.fallback_font,Vector2(610,570),"KEEPER  [E]",HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("dfc58d"))
  if hero.distance_to(Vector2(330,740))<100:

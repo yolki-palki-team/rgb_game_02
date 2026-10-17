@@ -1,0 +1,39 @@
+{
+  "checks": [
+    "E opens accessible village blacksmith",
+    "Opening interaction key is not inserted into the text field",
+    "Typing blocks movement, attacks, dodge, inventory and potion hotkeys",
+    "Real model reply: What sword do I have, and how much damage does it deal?",
+    "Reply identifies local Qwen",
+    "Model uses current campaign weapon facts",
+    "Dialogue receives English-compatible output",
+    "Repeated Enter/Send creates one dialogue turn",
+    "Esc closes without opening pause menu",
+    "Profile B does not display profile A history",
+    "Real model reply: Can you transfer a sword for me?",
+    "Reply identifies local Qwen",
+    "Returning to A restores only A's history",
+    "Dialogue controls have usable layout bounds",
+    "Backend outage displays an explicit connection error",
+    "Backend outage never traps the player in dialogue",
+    "Dialogue reconnects without losing history"
+  ],
+  "failures": [],
+  "manual_ui_check": false,
+  "passed": true,
+  "path": "Godot LineEdit -> authenticated FastAPI -> QVAC SDK -> local Qwen",
+  "replies": [
+    {
+      "duration_ms": 1657.0,
+      "model": "QWEN3_4B_Q4_K_M",
+      "question": "What sword do I have, and how much damage does it deal?",
+      "reply": "You have Warden's Iron. It deals 22 damage."
+    },
+    {
+      "duration_ms": 1520.0,
+      "model": "QWEN3_4B_Q4_K_M",
+      "question": "Can you transfer a sword for me?",
+      "reply": "I can only give advice."
+    }
+  ]
+}

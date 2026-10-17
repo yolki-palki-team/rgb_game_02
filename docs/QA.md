@@ -51,3 +51,11 @@ Still untested/unsupported: deep Bitcoin reorganizations, disk corruption and ma
 The accidental test recipient was repaired by a **new real RGB transfer** of the original UDA, with no new issuance. `sword4-return.json` records original asset ID, return txid, distinct wallet fingerprints, bilateral native settlement, sender=0, ordinary A=1 and exactly one issued contract for instance 4. The Godot check loaded the actual ordinary profile file and equipped #4 as ordinary A; `sword4-godot.json` and `sword4-ordinary-A.png` show this identity, 52 damage, ordinary B as the sole recipient, and the completed operation message. No new trial was started.
 
 The suite now has **23 backend tests**, passing on SQLite and PostgreSQL. Added regression coverage for name-independent test-account isolation, rejection of cross-purpose transfer requests, and immutable account purpose on registration replay. Existing campaigns and save files were preserved. Running Godot windows need a normal save-and-restart to load the changed client scripts; backend filtering is already live.
+
+## Native local blacksmith — 2026-10-17
+
+29 backend tests passed on SQLite and PostgreSQL, including isolated dialogue fixtures for auth, bounded history, profile isolation, idempotency, clear/cancellation, retries and restart recovery. The Node output-validator check passed. Godot import and ordinary campaign smoke passed.
+
+Separate **real inference** checks passed against QVAC SDK 0.21.1 / Qwen3 4B Q4_K_M: [API, actual service outage and isolated API crash recovery](evidence/blacksmith-api.json), [Godot input → API → model](evidence/blacksmith-godot.json), and [initial download progress](evidence/blacksmith-download.json). Existing item/owner/asset/operation state was compared before and after read-only model tests and remained unchanged. Full instructions and distinctions between fixture tests and real inference are in [BLACKSMITH.md](BLACKSMITH.md).
+
+The dialogue was **not manually clicked or visually verified** with Computer Use. Headless geometry and input checks passed; denied Godot access remains the manual-check limitation. Generation timeouts are covered by isolated error-path tests; the real model completed normal test replies in roughly 1.5–2.5 seconds on the tested Mac. No real timeout duration claim is made.

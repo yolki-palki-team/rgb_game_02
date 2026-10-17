@@ -12,6 +12,7 @@ from .models import Base, Player, GameSession, Item, InventoryEntry, Equipment, 
 from .combat.engine import initial, advance
 from .services.rewards import ensure_reward
 from .api.managed import install as install_managed
+from .api.blacksmith import install as install_blacksmith
 from .models import ManagedWallet,ItemInstance
 
 class StrictModel(BaseModel):model_config=ConfigDict(extra='forbid')
@@ -38,7 +39,9 @@ def create_app(database_url=None,testing=False):
   # SQLite is a zero-configuration local fallback. PostgreSQL uses Alembic.
   if engine.dialect.name=='sqlite':Base.metadata.create_all(engine)
   seed(engine)
+  app.state.blacksmith.recover()
   yield
+  await app.state.blacksmith.close()
   engine.dispose()
  app=FastAPI(title='RuneForge',version='1.0.0',lifespan=lifespan)
  app.state.engine=engine
@@ -160,6 +163,7 @@ def create_app(database_url=None,testing=False):
  def transfers(p=Depends(auth),db=Depends(db_session)):
   return {'transfers':[transfer_json(r) for r in db.scalars(select(RGBTransfer).where(RGBTransfer.player_id==p.id))]}
  install_managed(app,db_session,auth,lock_player)
+ install_blacksmith(app,db_session,auth,lock_player,Session)
  return app
 
 app=create_app()

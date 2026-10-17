@@ -1,0 +1,68 @@
+[
+  {
+    "application": "runeforge-blacksmith-qvac",
+    "state": "downloading",
+    "model": "QWEN3_4B_Q4_K_M",
+    "provider": "qvac",
+    "local": true,
+    "progress": 58.03,
+    "downloaded": 1449263104,
+    "total": 2497281312,
+    "error": null
+  },
+  {
+    "application": "runeforge-blacksmith-qvac",
+    "state": "downloading",
+    "model": "QWEN3_4B_Q4_K_M",
+    "provider": "qvac",
+    "local": true,
+    "progress": 68.18,
+    "downloaded": 1702657312,
+    "total": 2497281312,
+    "error": null
+  },
+  {
+    "application": "runeforge-blacksmith-qvac",
+    "state": "downloading",
+    "model": "QWEN3_4B_Q4_K_M",
+    "provider": "qvac",
+    "local": true,
+    "progress": 79.15,
+    "downloaded": 1976597792,
+    "total": 2497281312,
+    "error": null
+  },
+  {
+    "application": "runeforge-blacksmith-qvac",
+    "state": "downloading",
+    "model": "QWEN3_4B_Q4_K_M",
+    "provider": "qvac",
+    "local": true,
+    "progress": 90.65,
+    "downloaded": 2263776544,
+    "total": 2497281312,
+    "error": null
+  },
+  {
+    "application": "runeforge-blacksmith-qvac",
+    "state": "loading",
+    "model": "QWEN3_4B_Q4_K_M",
+    "provider": "qvac",
+    "local": true,
+    "progress": 100,
+    "downloaded": 2497281312,
+    "total": 2497281312,
+    "error": null
+  },
+  {
+    "application": "runeforge-blacksmith-qvac",
+    "state": "ready",
+    "model": "QWEN3_4B_Q4_K_M",
+    "provider": "qvac",
+    "local": true,
+    "progress": 100,
+    "downloaded": 2497281312,
+    "total": 2497281312,
+    "error": null
+  }
+]

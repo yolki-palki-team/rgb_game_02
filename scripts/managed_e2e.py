@@ -26,7 +26,7 @@ def main():
  statefile=ROOT/os.getenv('RUNEFORGE_E2E_PROFILES','.state/managed-e2e-profiles.json');statefile.parent.mkdir(exist_ok=True)
  if statefile.exists():profiles=json.loads(statefile.read_text())
  else:
-  profiles=[httpx.post(BASE+'/api/players',json={'name':'Проверка '+x,'is_test':True},timeout=10).json() for x in ('А','Б')]
+  profiles=[httpx.post(BASE+'/api/players',json={'name':'Verification '+x,'is_test':True},timeout=10).json() for x in ('A','B')]
   statefile.write_text(json.dumps(profiles));statefile.chmod(0o600)
  a,b=[httpx.Client(base_url=BASE,headers={'Authorization':'Bearer '+p['token']},timeout=20) for p in profiles]
  engine=make_engine()

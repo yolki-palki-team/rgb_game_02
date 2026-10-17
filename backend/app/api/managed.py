@@ -35,6 +35,8 @@ def profile_label(name):
   labels['\u0422\u0435\u0441\u0442 '+slot]='Test '+slot
   for client in ('JS','WASM'):
    labels['\u0422\u0435\u0441\u0442 '+client+' '+slot]='Test '+client+' '+slot
+ for legacy_slot,slot in [(chr(0x410),'A'),(chr(0x411),'B')]:
+  labels['\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 '+legacy_slot]='Verification '+slot
  return labels.get(name,name)
 
 def service_status(db):

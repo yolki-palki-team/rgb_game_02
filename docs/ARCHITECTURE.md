@@ -31,3 +31,7 @@ See [RGB.md](RGB.md) for signatures, lease timing, stale SDK lock recovery and r
 ## Scope
 
 One ordinary local chapter and a server-judged trial; managed player-to-player UDA transfer on local regtest. No independent-device account enrollment UI, external-wallet deposit/ownership proof, marketplace, barter, atomic swap, production auth or mainnet. Existing enemy AI was preserved; this work adds no ML features. Reorgs, damaged wallet state and full disaster recovery need further testing/hardening.
+
+## Local blacksmith
+
+The native dialogue uses its own HTTPRequest against authenticated `/api/npc/blacksmith` endpoints so wallet lease polling remains independent. FastAPI builds a small current-player fact snapshot, persists a profile-scoped turn and performs inference asynchronously through the loopback Node/QVAC sidecar. The sidecar loads pinned local Qwen3 4B weights and exposes only model status, load and reply; there are no game actions or wallet APIs in its model interface. Per-profile revisioned history is bounded, and shared model KV caching is disabled. See [BLACKSMITH.md](BLACKSMITH.md) for privacy boundaries, cancellation, restart semantics and reproducible real inference checks.

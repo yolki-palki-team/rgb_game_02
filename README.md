@@ -14,11 +14,13 @@ All versions include the Python/FastAPI backend and real RGB integration:
 | [feature/webassembly](https://github.com/yolki-palki-team/rgb_game_02/tree/feature/webassembly) | Godot exported to WebAssembly |
 | [feature/javascript](https://github.com/yolki-palki-team/rgb_game_02/tree/feature/javascript) | Standalone JavaScript / Canvas 2D client |
 
-![Flame Sword in the recipient inventory; historical capture before English localization](docs/evidence/managed-recipient.png)
+![Emberfall village and the English campaign HUD](docs/evidence/hub.png)
 
 ## Run the native game
 
-Requirements: Docker Desktop or Docker Compose, Python 3 with a compatible `rgb-lib` wheel, and Godot 4.4 or newer. The WebAssembly branch requires Godot **4.4.1** and matching export templates.
+**New laptop or fresh clone?** Follow [the complete setup guide](docs/NEW_LAPTOP.md) first: tools, clone, Godot path, virtual environment, asset import, first model download, health checks and platform limitations. A fresh installation gets new local profiles and wallets; old swords and saves are not included in Git.
+
+Requirements: Docker Desktop or Docker Compose, Python 3 with a compatible `rgb-lib` wheel, Godot 4.4 or newer, and Node 22.17+ / npm 10.9+ for the local AI blacksmith. The WebAssembly branch requires Godot **4.4.1** and matching export templates.
 
 From the repository root, with Docker running:
 
@@ -26,7 +28,7 @@ From the repository root, with Docker running:
 ./scripts/start.sh
 ```
 
-The launcher starts the isolated `runeforge` infrastructure, applies database migrations, and starts FastAPI, the wallet worker, and Godot. Repeated launches reuse existing processes and data; they do not delete Docker volumes or create duplicate profiles or rewards. If needed, the launcher creates `.venv` and installs the backend dependencies.
+The launcher starts the isolated `runeforge` infrastructure, applies database migrations, and starts FastAPI, the wallet worker, local QVAC, and Godot. Repeated launches reuse existing processes and data; they do not delete Docker volumes or create duplicate profiles or rewards. If needed, the launcher creates `.venv` and installs the backend dependencies.
 
 Set `GODOT_BIN=/path/to/godot` if Godot is not on your PATH or in `tools/godot`. To install dependencies into an existing virtual environment:
 
@@ -36,11 +38,19 @@ Set `GODOT_BIN=/path/to/godot` if Godot is not on your PATH or in `tools/godot`.
 
 - API documentation: http://127.0.0.1:8787/docs
 - Health check: http://127.0.0.1:8787/health
-- Logs: `.state/api.log`, `.state/worker.log`, `.state/game.log`
+- Logs: `.state/api.log`, `.state/worker.log`, `.state/game.log`, `.state/qvac.log`
 - Services only: `./scripts/start.sh --no-game`
 - Game only: `./scripts/play.sh`
 
 Without the backend, the local campaign remains playable and RGB equipment is unavailable. There is no automatic fallback to simulated transfers.
+
+## Talk to the blacksmith
+
+Bram stands beside an anvil **east of the Keeper**, on the village road toward the crypt. Walk close and press **E**. Ask freely about your weapons, RGB item restrictions or the Oath Trial. He answers briefly in English using local **Qwen3 4B through QVAC**, with no cloud fallback. Enter sends; Esc closes; Clear conversation clears only the current profile's history. Gameplay controls are paused while you type.
+
+The first launch downloads approximately **2.50 GB**; real download progress appears in the dialogue and subsequent launches reuse the local cache. Bram only reads game state: he cannot mint, equip or transfer anything. His advice can be mistaken; the item screen and server remain authoritative. If the game was already open before updating, save, close it and launch again to load the new NPC.
+
+See [blacksmith setup, architecture and real integration checks](docs/BLACKSMITH.md).
 
 ## Earn, equip, and transfer a sword
 
@@ -69,7 +79,7 @@ This local MVP does not provide email account recovery, password-encrypted seed 
 | Left mouse button | Sword attack |
 | Space | Dodge roll |
 | Q | Drink a potion |
-| E | Interact with Keeper, portal, chest, or shrine |
+| E | Talk to Bram / interact with Keeper, portal, chest, or shrine |
 | I | Campaign inventory |
 | R | RGB items, profiles, and trial |
 | Esc / F5 | Menu / save |
