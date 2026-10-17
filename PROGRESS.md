@@ -101,3 +101,12 @@ This revision supersedes the older mock-default/manual-operator delivery describ
 - Client selection retains recipient UUID rather than a changing list index; profile tabs use actual profile names and the active profile ID is visible. Transfer feedback now follows the recorded operation status and becomes “Передача завершена”; switching profiles clears stale feedback.
 - 23 backend tests passed on SQLite and PostgreSQL, including hidden test recipients, server rejection of a crafted cross-purpose transfer and purpose-safe registration replay. Godot import/campaign smoke passed.
 - Actual Godot `--verify-sword4` passed using ordinary `managed_profiles.json` (not test profiles): ordinary A identity, same asset, 52 damage, only ordinary B in recipient choices, completed transfer message after polling, and clearing messages on profile switch. Evidence: `docs/evidence/sword4-return.json`, `sword4-godot.json`, `sword4-ordinary-A.png`.
+
+
+## English localization — 2026-10-17
+
+Translated README, menus, HUD, trial, equipment, transfer history, errors, catalog descriptions and managed RGB API messages into English. Existing built-in profile names are localized for display only; registration credentials and profile IDs remain unchanged. Catalog seeding updates presentation text without reissuing assets or changing ownership. Custom player names and historical evidence retain their original contents.
+
+Validation: 25 backend tests and native Godot headless smoke pass; the JavaScript branch passes 11 unit tests. Full browser/manual UI verification remains blocked by the earlier denied Computer Use access and is not claimed as passed.
+
+Live integration: restarted the local backend/worker only after confirming no transfers were pending. Verified English item/status responses through both web proxies and compared every item instance, asset_id, owner and state before/after restart: unchanged. WebAssembly release export also passed.
