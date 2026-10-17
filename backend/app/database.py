@@ -6,7 +6,7 @@ from .models import Base, Item
 
 CATALOG=[
  dict(id='warden_iron',name="Warden's Iron",rarity='Common',slot='weapon',damage=22,description='Cloud starter blade.'),
- dict(id='oath_relic',name='Огненный меч',rarity='Legendary',slot='weapon',damage=52,description='Награда Хранителя. Уникальный RGB-меч: 52 урона. Передаётся между игроками.'),
+ dict(id='oath_relic',name='Flame Sword',rarity='Legendary',slot='weapon',damage=52,description='A reward from the Keeper. Unique RGB sword: 52 damage. Transferable between players.'),
 ]
 def make_engine(url=None):
  url=url or os.getenv('DATABASE_URL','sqlite:///.state/runeforge.db')

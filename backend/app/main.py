@@ -138,7 +138,7 @@ def create_app(database_url=None,testing=False):
   if row.state['status']!='won':raise HTTPException(409,'Victory has not been validated by the server')
   existing,instance=ensure_reward(db,p.id,sid,body.idempotency_key)
   total=count(db,p);db.commit()
-  return {'reward_id':existing.id,'inventory_id':existing.inventory_id,'inventory_count':total,'serial':instance.serial if instance else None,'message':'Награда заработана. Кузнец выпускает меч и доставляет его в ваш кошелёк.'}
+  return {'reward_id':existing.id,'inventory_id':existing.inventory_id,'inventory_count':total,'serial':instance.serial if instance else None,'message':'Reward earned. The smith is issuing your sword and delivering it to your wallet.'}
  @app.get('/api/ownership/{asset_id}')
  def ownership(asset_id:str,p=Depends(auth),db=Depends(db_session)):
   asset=db.get(RGBAsset,asset_id)

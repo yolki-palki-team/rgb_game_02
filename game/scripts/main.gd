@@ -379,7 +379,7 @@ func weapon_damage() -> int:
  return verified if verified>0 else int(ITEMS[weapon].damage)
 
 func weapon_name() -> String:
- return "Огненный меч #"+str(int(net.equipment.serial)) if net.equipped_damage()>0 else str(ITEMS[weapon].name)
+ return "Flame Sword #"+str(int(net.equipment.serial)) if net.equipped_damage()>0 else str(ITEMS[weapon].name)
 
 func weapon_icon() -> String:
  return "legendary" if net.equipped_damage()>0 else str(ITEMS[weapon].icon)
@@ -489,7 +489,7 @@ func _draw():
  draw_texture_rect(textures.glow,Rect2(forge-Vector2(90,115),Vector2(180,180)),false,Color(0.7,0.5,1,0.6))
  draw_arc(forge-Vector2(0,22),35,0,TAU,40,Color("b49ad1"),3)
  tex("legendary",forge-Vector2(24,58+sin(t*3)*4),Vector2(48,48))
- draw_string(ThemeDB.fallback_font,forge+Vector2(-83,42),"ИСПЫТАНИЕ КЛЯТВЫ [E]",HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("dfc58d"))
+ draw_string(ThemeDB.fallback_font,forge+Vector2(-83,42),"OATH TRIAL [E]",HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("dfc58d"))
  # Road edge lamps and passage lettering use world coordinates.
  draw_string(ThemeDB.fallback_font,Vector2(885,640),"THE HOLLOW →",HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("b5ac8a"))
  for e in enemies:
@@ -774,10 +774,10 @@ func run_sword4_check():
  for operation in net.history:
   if int(operation.serial)==4 and operation.recipient_id==net.profile.id and operation.state=="settled":completed=operation;break
  if completed.is_empty():managed_failure("settled return history");return
- net.message="Передача выполняется автоматически."
+ net.message="Transfer is running automatically."
  net.message_operation_id=completed.id
  net.refresh_status();await wait_network()
- if not net.message.begins_with("Передача завершена.") or "выполняется" in net.message:
+ if not net.message.begins_with("Transfer complete.") or "running" in net.message:
   managed_failure("stale transfer message");return
  await managed_capture("sword4-ordinary-A.png")
  var result={"serial":4,"profile_id":net.profile.id,"profile_name":net.profile.name,"is_test":net.profile.is_test,"asset_id":net.equipment.asset_id,"damage":weapon_damage(),"recipient_ids":[net.players[0].id],"message":net.message}
@@ -793,5 +793,5 @@ func run_sword4_check():
 func quit_game():
  if menu_started:save_game()
  if OS.has_feature("web"):
-  state="menu";overlay="";announce("Прогресс сохранён. Можно закрыть вкладку.",5)
+  state="menu";overlay="";announce("Progress saved. You can close this tab.",5)
  else:get_tree().quit()

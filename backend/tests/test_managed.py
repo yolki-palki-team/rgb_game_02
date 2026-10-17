@@ -110,3 +110,33 @@ def test_registration_cannot_reclassify_existing_profile(api):
  assert first.status_code==201
  assert api.post('/api/players',json=body).json()==first.json()
  assert api.post('/api/players',json={**body,'is_test':False}).status_code==409
+
+
+def test_english_catalog_preserves_item_identity_and_ownership(api):
+ from backend.app.database import seed
+ from backend.app.models import Item
+ serial=earned(api);authorize_fixture(api,serial)
+ with Session(api.app.state.engine) as db:
+  item=db.get(Item,'oath_relic');item.name='\u041e\u0433\u043d\u0435\u043d\u043d\u044b\u0439 \u043c\u0435\u0447';db.commit()
+  instance=db.get(ItemInstance,serial);before=(instance.asset_id,instance.owner_id,instance.state)
+ seed(api.app.state.engine)
+ with Session(api.app.state.engine) as db:
+  instance=db.get(ItemInstance,serial)
+  assert (instance.asset_id,instance.owner_id,instance.state)==before
+  assert db.get(Item,'oath_relic').name=='Flame Sword'
+ data=api.get('/api/relics').json()
+ assert data['items'][0]['status']=='Ownership verified'
+ assert data['items'][0]['name']=='Flame Sword'
+ assert data['service']['message']=='Wallets connected · Bitcoin regtest'
+
+
+def test_legacy_profile_labels_do_not_change_registration(api):
+ from backend.app.api.managed import profile_label
+ name='\u0418\u0433\u0440\u043e\u043a A'
+ body={'name':name,'registration_key':'e'*64}
+ first=api.post('/api/players',json=body).json()
+ assert api.post('/api/players',json=body).json()['id']==first['id']
+ headers={'Authorization':'Bearer '+first['token']}
+ assert api.get('/api/profile',headers=headers).json()['name']==name
+ assert api.get('/api/relics',headers=headers).json()['profile']['name']=='Player A'
+ assert profile_label('Custom name')=='Custom name'

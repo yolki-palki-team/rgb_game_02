@@ -110,3 +110,12 @@ Implemented Godot / WebAssembly, same-origin API proxy, separate WASM A/B browse
 Validated: 23 backend tests; 6 proxy tests; real HTTP trial/UDA/equipment/A→B transfer/sender revocation/recipient equipment (see docs/evidence/web-api-webassembly.json). Godot 4.4.1 web export and native headless smoke pass.
 
 Browser QA is partial, not complete: initial Chromium launch succeeded; full/manual browser verification was blocked by denied Computer Use access. Browser tests stopped, no workaround attempted. See docs/WEB.md for exact observations and remaining checks.
+
+
+## English localization — 2026-10-17
+
+Translated README, menus, HUD, trial, equipment, transfer history, errors, catalog descriptions and managed RGB API messages into English. Existing built-in profile names are localized for display only; registration credentials and profile IDs remain unchanged. Catalog seeding updates presentation text without reissuing assets or changing ownership. Custom player names and historical evidence retain their original contents.
+
+Validation: 25 backend tests and native Godot headless smoke pass; the JavaScript branch passes 11 unit tests. Full browser/manual UI verification remains blocked by the earlier denied Computer Use access and is not claimed as passed.
+
+Live integration: restarted the local backend/worker only after confirming no transfers were pending. Verified English item/status responses through both web proxies and compared every item instance, asset_id, owner and state before/after restart: unchanged. WebAssembly release export also passed.
